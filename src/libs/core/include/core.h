@@ -117,6 +117,12 @@ class Core
     virtual void AddToLayer(layer_index_t index, entid_t id, priority_t priority) = 0;
     virtual void EraseEntity(entid_t entity) = 0;
     virtual entid_t CreateEntity(const char *name, ATTRIBUTES *attr = nullptr) = 0;
+
+    template <typename T> [[nodiscard]] T *GetEntity(entid_t entity) const
+    {
+        return dynamic_cast<T *>(GetEntityPointer(entity));
+    }
+
     virtual entptr_t GetEntityPointer(entid_t entity) const = 0;
     virtual entptr_t GetEntityPointerSafe(entid_t entity) const = 0;
     virtual entid_t GetEntityId(const char *name) const = 0;

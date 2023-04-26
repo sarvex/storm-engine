@@ -61,7 +61,8 @@ bool Fader::Init()
         if (eid == GetId())
             continue;
 
-        if (fadeIn == static_cast<Fader *>(core.GetEntityPointer(eid))->fadeIn)
+        const auto *fader = core.GetEntity<Fader>(eid);
+        if (fader != nullptr && fadeIn == fader->fadeIn)
         {
             core.Trace("Fader::Init() -> Fader already created, %s", fadeIn ? "fade in phase" : "fade out phase");
         }
