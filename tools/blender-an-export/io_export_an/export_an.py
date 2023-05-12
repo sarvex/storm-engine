@@ -86,12 +86,9 @@ def export_an(context, file_path=""):
         start_joints_positions.append(start_joint_position.to_tuple(21))
 
         if bone_idx == 0:
-            location_fcu_x = fcurves.find(
-                'pose.bones["' + bone.name + '"].location', index=0)
-            location_fcu_y = fcurves.find(
-                'pose.bones["' + bone.name + '"].location', index=1)
-            location_fcu_z = fcurves.find(
-                'pose.bones["' + bone.name + '"].location', index=2)
+            location_fcu_x = fcurves.find(f'pose.bones["{bone.name}"].location', index=0)
+            location_fcu_y = fcurves.find(f'pose.bones["{bone.name}"].location', index=1)
+            location_fcu_z = fcurves.find(f'pose.bones["{bone.name}"].location', index=2)
 
             location_x = []
             location_y = []
@@ -110,23 +107,29 @@ def export_an(context, file_path=""):
                     [location_x[idx] + root_start_x, location_y[idx] + root_start_y, location_z[idx] + root_start_z])
 
         rotation_quaternion_fcu_w = fcurves.find(
-            'pose.bones["' + bone.name + '"].rotation_quaternion', index=0)
+            f'pose.bones["{bone.name}"].rotation_quaternion', index=0
+        )
         rotation_quaternion_fcu_x = fcurves.find(
-            'pose.bones["' + bone.name + '"].rotation_quaternion', index=1)
+            f'pose.bones["{bone.name}"].rotation_quaternion', index=1
+        )
         rotation_quaternion_fcu_y = fcurves.find(
-            'pose.bones["' + bone.name + '"].rotation_quaternion', index=2)
+            f'pose.bones["{bone.name}"].rotation_quaternion', index=2
+        )
         rotation_quaternion_fcu_z = fcurves.find(
-            'pose.bones["' + bone.name + '"].rotation_quaternion', index=3)
+            f'pose.bones["{bone.name}"].rotation_quaternion', index=3
+        )
 
-        rotation_quaternion_w = []
-        rotation_quaternion_x = []
         rotation_quaternion_y = []
         rotation_quaternion_z = []
 
-        for keyframe in rotation_quaternion_fcu_w.keyframe_points:
-            rotation_quaternion_w.append(keyframe.co[1])
-        for keyframe in rotation_quaternion_fcu_x.keyframe_points:
-            rotation_quaternion_x.append(keyframe.co[1])
+        rotation_quaternion_w = [
+            keyframe.co[1]
+            for keyframe in rotation_quaternion_fcu_w.keyframe_points
+        ]
+        rotation_quaternion_x = [
+            keyframe.co[1]
+            for keyframe in rotation_quaternion_fcu_x.keyframe_points
+        ]
         for keyframe in rotation_quaternion_fcu_y.keyframe_points:
             rotation_quaternion_y.append(keyframe.co[1])
         for keyframe in rotation_quaternion_fcu_z.keyframe_points:

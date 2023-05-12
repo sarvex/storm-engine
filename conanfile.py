@@ -47,7 +47,9 @@ class StormEngine(ConanFile):
     }
 
     def imports(self):
-        self.__dest = str(self.options.output_directory) + "/" + getenv("CONAN_IMPORT_PATH", "bin")
+        self.__dest = f"{str(self.options.output_directory)}/" + getenv(
+            "CONAN_IMPORT_PATH", "bin"
+        )
         self.__install_folder("/src/techniques", "/resource/techniques")
         self.__install_folder("/src/libs/shared_headers/include/shared", "/resource/shared")
 
@@ -99,7 +101,7 @@ class StormEngine(ConanFile):
         git = tools.Git()
         try:
             if git.is_pristine():
-                return "%s(%s)" % (git.get_branch(), git.get_revision())
+                return f"{git.get_branch()}({git.get_revision()})"
             else:
                 return "%s(%s)-DIRTY(%032x)" % (git.get_branch(), git.get_revision(), getrandbits(128))
         except:

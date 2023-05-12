@@ -169,20 +169,20 @@ def prepare_globnames(objects, locators, materials, is_animated):
 
     for material in materials:
         name = material.get("name")
-        if not (name in globnames):
+        if name not in globnames:
             globnames.append(name)
         textures = material.get("textures")
         for texture in textures:
-            if not (texture in globnames):
+            if texture not in globnames:
                 globnames.append(texture)
 
     for object in objects:
         name = remove_blender_name_postfix(object.name)
         parent_name = remove_blender_name_postfix(object.parent.name)
 
-        if not (name in globnames):
+        if name not in globnames:
             globnames.append(name)
-        if not (parent_name in globnames):
+        if parent_name not in globnames:
             globnames.append(parent_name)
 
     for locator in locators:
@@ -190,9 +190,9 @@ def prepare_globnames(objects, locators, materials, is_animated):
         parent_name = remove_blender_name_postfix(locator.parent_bone) if is_animated else remove_blender_name_postfix(
             locator.parent.name)
 
-        if not (name in globnames):
+        if name not in globnames:
             globnames.append(name)
-        if not (parent_name in globnames):
+        if parent_name not in globnames:
             globnames.append(parent_name)
 
     return globnames

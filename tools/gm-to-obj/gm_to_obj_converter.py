@@ -271,7 +271,8 @@ def convert(input_name, output_name):
         if(n != 0):
             names_dict[n] = next(words)
 
-    # All the properties which a .obj file has. https://en.wikipedia.org/wiki/Wavefront_.obj_file
+
+
     class ProperObj:
         def __init__(self, name, svertex, striangle, nvertices, ntriangles, vertex_buff):
             self.name = name
@@ -284,11 +285,12 @@ def convert(input_name, output_name):
                 self.parsed_name = names_dict[name]
             except KeyError:
                 self.parsed_name = "Name_not_found"
-            self.o = "o "+self.parsed_name+"\n"
+            self.o = f"o {self.parsed_name}" + "\n"
             self.v = ""
             self.vn = ""
             self.vt = ""
             self.f = ""
+
         # List of vertices
 
         def add_v(self, x, y, z):
@@ -306,6 +308,7 @@ def convert(input_name, output_name):
         def add_f(self, x, y, z):
             self.f += "f %d %d %d\n" % (x+1+self.svertex,
                                         y+1+self.svertex, z+1+self.svertex)
+
 
     # Dictionaries used to store objects' start and end
     list_objects = []
@@ -351,21 +354,19 @@ def convert(input_name, output_name):
 
     # start crating obj file
     _print("\nWriting output               ")
-    out = open(output_name, "w")
-    out.write("# Obj generator for the storm-engine \n")
-    out.write("# Author: https://github.com/MangioneAndrea \n")
-    # Add smoothing
-    out.write("s 1 \n")
+    with open(output_name, "w") as out:
+        out.write("# Obj generator for the storm-engine \n")
+        out.write("# Author: https://github.com/MangioneAndrea \n")
+        # Add smoothing
+        out.write("s 1 \n")
 
-    # Write everything to file
-    for obj in list_objects:
-        out.write(obj.o)
-        out.write(obj.v)
-        out.write(obj.vt)
-        out.write(obj.vn)
-        out.write(obj.f)
-
-    out.close()
+        # Write everything to file
+        for obj in list_objects:
+            out.write(obj.o)
+            out.write(obj.v)
+            out.write(obj.vt)
+            out.write(obj.vn)
+            out.write(obj.f)
 
     _print("\nDone")
 

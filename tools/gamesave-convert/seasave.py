@@ -305,8 +305,8 @@ def read_ship(buffer, cur_ptr):
     num_hulls = struct.unpack_from('I', buffer, cur_ptr)[0]
     cur_ptr += 4
     hulls = []
+    fmt = '3f3fIIf'
     for _ in range(num_hulls):
-        fmt = '3f3fIIf'
         data = struct.unpack_from(fmt, buffer, cur_ptr)
         cur_ptr += struct.calcsize(fmt)
 
@@ -447,10 +447,10 @@ def read_aiship_cannon_controller(buffer, cur_ptr):
     num_borts = struct.unpack_from('I', buffer, cur_ptr)[0]
     cur_ptr += 4
     borts = []
+    fmt = '7fIff3f'
     for _ in range(num_borts):
         name, cur_ptr = read_string(buffer, cur_ptr, 'cp1251')
 
-        fmt = '7fIff3f'
         data = struct.unpack_from(fmt, buffer, cur_ptr)
         cur_ptr += struct.calcsize(fmt)
 
@@ -777,17 +777,15 @@ def read_seasave(buffer):
     else:
         aifort = None
 
-    seasave = {
+    return {
         'aihelper': aihelper,
         'ship_cam': ship_cam,
         'free_cam': free_cam,
         'deck_cam': deck_cam,
         'aiballs': aiballs,
         'aigroups': aigroups,
-        'aifort': aifort
+        'aifort': aifort,
     }
-
-    return seasave
 
 
 # Serialization

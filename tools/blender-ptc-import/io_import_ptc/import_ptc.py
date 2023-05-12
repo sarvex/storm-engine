@@ -92,36 +92,36 @@ class PTC:
             file.readinto(self.ptcHeader)
 
             self.triangle = []
-            for i in range(self.ptcHeader.numTriangles):
+            for _ in range(self.ptcHeader.numTriangles):
                 ptcTriangle = self.PtcTriangle()
                 file.readinto(ptcTriangle)
                 self.triangle.append(ptcTriangle)
 
             self.vertex = []
-            for i in range(self.ptcHeader.numVerteces):
+            for _ in range(self.ptcHeader.numVerteces):
                 ptcVertex = self.PtcVertex()
                 file.readinto(ptcVertex)
                 self.vertex.append(ptcVertex)
 
             self.normal = []
-            for i in range(self.ptcHeader.numNormals):
+            for _ in range(self.ptcHeader.numNormals):
                 ptcNormal = self.PtcNormal()
                 file.readinto(ptcNormal)
                 self.normal.append(ptcNormal)
 
             self.map = []
-            for i in range(self.ptcHeader.mapL * self.ptcHeader.mapW):
+            for _ in range(self.ptcHeader.mapL * self.ptcHeader.mapW):
                 map = self.PtcMap()
                 file.readinto(map)
                 self.map.append(map)
 
             self.indeces = []
-            for i in range(self.ptcHeader.numIndeces):
+            for _ in range(self.ptcHeader.numIndeces):
                 idx = struct.unpack("<H", file.read(2))[0]
                 self.indeces.append(idx)
 
             self.table = []
-            for i in range(self.ptcHeader.lineSize * self.ptcHeader.numTriangles):
+            for _ in range(self.ptcHeader.lineSize * self.ptcHeader.numTriangles):
                 cell = struct.unpack("<B", file.read(1))[0]
                 self.table.append(cell)
 
@@ -129,8 +129,9 @@ class PTC:
             file.readinto(self.materials)
 
             self.preparedMaterials = []
-            for word in self.materials.material:
-                self.preparedMaterials.append(word.value.decode("utf-8"))
+            self.preparedMaterials.extend(
+                word.value.decode("utf-8") for word in self.materials.material
+            )
 
 
 def import_ptc(context, file_path=""):
@@ -197,7 +198,7 @@ def import_ptc(context, file_path=""):
                 face.normal = mathutils.Vector((-normal.x, normal.y, normal.z))
 
             except Exception as e:
-                print(str(e))
+                print(e)
 
         bmesh.ops.rotate(bm, verts=bm.verts, cent=(
             0.0, 0.0, 0.0), matrix=correction_matrix)

@@ -92,23 +92,20 @@ def read_value(var_type, buffer, cur_ptr, s_db, str_encoding, obj_id_format):
     elif var_type == VarType.Object:
         v = {'id': struct.unpack_from(obj_id_format, buffer, cur_ptr)}
         cur_ptr += struct.calcsize(obj_id_format)
-        attributes = {}
         attr, cur_ptr = read_attributes_data(buffer, cur_ptr, s_db, str_encoding)
         attr_name = str_db.get_str(s_db, attr['name_code'])
-        attributes[attr_name] = attr
+        attributes = {attr_name: attr}
         v['attributes'] = attributes
 
     elif var_type == VarType.Reference:
-        v = {}
         var_index, cur_ptr = read_int8_16_32(buffer, cur_ptr)
-        v['var_index'] = var_index
+        v = {'var_index': var_index}
         if var_index != 0xffffffff:
             array_index, cur_ptr = read_int8_16_32(buffer, cur_ptr)
             v['array_index'] = array_index
     elif var_type == VarType.AttributeReference:
-        v = {}
         var_index, cur_ptr = read_int8_16_32(buffer, cur_ptr)
-        v['var_index'] = var_index
+        v = {'var_index': var_index}
         if var_index != 0xffffffff:
             array_index, cur_ptr = read_int8_16_32(buffer, cur_ptr)
             v['array_index'] = array_index
@@ -146,16 +143,14 @@ def read_variable(buffer, cur_ptr, s_db, str_encoding, obj_id_format):
 
 def read_save(file_name):
     with open(file_name, 'rb') as f:
-        save_data = {}
         file_info = struct.unpack('32s', f.read(32))[0]
-        file_info = file_info[0:file_info.find(b'\x00')]
+        file_info = file_info[:file_info.find(b'\x00')]
         file_info = file_info.decode('utf-8')
 
         if file_info != 'ver 1.0.7':
             return None, None
 
-        save_data['file_info'] = file_info
-
+        save_data = {'file_info': file_info}
         str_encoding = FILEINFO_CONFIG[file_info]['str_encoding']
         obj_id_format = FILEINFO_CONFIG[file_info]['obj_id_format']
 
@@ -238,15 +233,14 @@ def read_save(file_name):
 def write_int8_16_32(value, buffer):
     if value < 0xfe:
         buffer += struct.pack('B', value)
-        return buffer
     elif value < 0xffff:
         buffer += struct.pack('B', 0xfe)
         buffer += struct.pack('H', value)
-        return buffer
     else:
         buffer += struct.pack('B', 0xff)
         buffer += struct.pack('I', value)
-        return buffer
+
+    return buffer
 
 
 def write_string(s, buffer, encoding):
@@ -590,9 +584,7 @@ def convert_107_to_173(save_data, s_db):
 
 def dump_save(save_data, filename):
     def fallback(v):
-        if isinstance(v, Enum):
-            return v.name
-        return f'Unsupported type: {type(v)}'
+        return v.name if isinstance(v, Enum) else f'Unsupported type: {type(v)}'
 
     import json
     with open(filename, 'w', encoding='utf-8') as f:

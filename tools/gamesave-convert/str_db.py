@@ -34,15 +34,11 @@ def get_str(db, i):
     if row_id >= HASH_TABLE_SIZE or elem_id >= len(db[row_id]):
         logging.warning(f"couldn't find name code {i} in the string database")
         return f'str_db[{hex(i)}]'
-    entry = db[row_id][elem_id]
-    return entry
+    return db[row_id][elem_id]
 
 
 def create_db(str_list, str_encoding):
-    db = []
-    for i in range(HASH_TABLE_SIZE):
-        db.append([])
-
+    db = [[] for _ in range(HASH_TABLE_SIZE)]
     for s in str_list:
         h = hash_str(s, str_encoding)
         row_id = h % HASH_TABLE_SIZE
@@ -54,10 +50,7 @@ def create_db(str_list, str_encoding):
 def remove_unused(db, used_str, str_encoding):
     unused_str = []
     for row in db:
-        for elem in row:
-            if elem not in used_str:
-                unused_str.append(elem)
-
+        unused_str.extend(elem for elem in row if elem not in used_str)
     for s in unused_str:
         h = hash_str(s, str_encoding)
         row_id = h % HASH_TABLE_SIZE

@@ -46,12 +46,12 @@ def parse_an(file_path=""):
         fps = struct.unpack("<f", file.read(4))[0]
 
         parent_indices = []
-        for i in range(joints_quantity):
+        for _ in range(joints_quantity):
             idx = struct.unpack("<l", file.read(4))[0]
             parent_indices.append(idx)
 
         start_joints_positions = []
-        for i in range(joints_quantity):
+        for _ in range(joints_quantity):
             vector = read_vector(file)
             start_joints_positions.append(vector)
 
@@ -67,7 +67,7 @@ def parse_an(file_path=""):
 
         root_bone_positions = []
         [root_start_x, root_start_y, root_start_z] = start_joints_positions[0]
-        for i in range(frames_quantity):
+        for _ in range(frames_quantity):
             [x, y, z] = read_vector(file)
             root_bone_positions.append(
                 [x - root_start_x, y - root_start_y, z - root_start_z])
@@ -75,7 +75,7 @@ def parse_an(file_path=""):
         joints_angles = []
         for i in range(joints_quantity):
             joints_angles.append([])
-            for j in range(frames_quantity):
+            for _ in range(frames_quantity):
                 d3dx_quaternion = read_d3dx_quaternion(file)
                 joints_angles[i].append(d3dx_quaternion)
 
@@ -133,7 +133,7 @@ def import_an(context, file_path=""):
     bones_arr = []
 
     for idx in range(joints_quantity):
-        bone = armature_edit_bones.new("Bone" + str(idx))
+        bone = armature_edit_bones.new(f"Bone{str(idx)}")
 
         if idx != 0:
             bone.parent = bones_arr[parent_indices[idx]]
@@ -163,31 +163,29 @@ def import_an(context, file_path=""):
     bpy.ops.object.mode_set(mode='POSE', toggle=False)
 
     for bone_idx in range(joints_quantity):
-        bone_name = "Bone" + str(bone_idx)
+        bone_name = f"Bone{str(bone_idx)}"
 
         if bone_idx == 0:
             for idx in range(3):
-                fc = actions.fcurves.new(
-                    'pose.bones["' + bone_name + '"].location', index=idx)
+                fc = actions.fcurves.new(f'pose.bones["{bone_name}"].location', index=idx)
                 fc.keyframe_points.add(count=frames_quantity)
 
                 key_values = []
                 for frame in range(frames_quantity):
-                    key_values.append(frame)
-                    key_values.append(root_bone_positions[frame][idx])
+                    key_values.extend((frame, root_bone_positions[frame][idx]))
                 fc.keyframe_points.foreach_set("co", key_values)
 
                 fc.update()
 
         for idx in range(4):
             fc = actions.fcurves.new(
-                'pose.bones["' + bone_name + '"].rotation_quaternion', index=idx)
+                f'pose.bones["{bone_name}"].rotation_quaternion', index=idx
+            )
             fc.keyframe_points.add(count=frames_quantity)
 
             key_values = []
             for frame in range(frames_quantity):
-                key_values.append(frame)
-                key_values.append(joints_angles[bone_idx][frame][idx])
+                key_values.extend((frame, joints_angles[bone_idx][frame][idx]))
             fc.keyframe_points.foreach_set("co", key_values)
 
             fc.update()

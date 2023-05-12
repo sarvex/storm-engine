@@ -47,29 +47,25 @@ class tx_head(Structure):
 
 
 def convert(filename):
-    f = open(filename, "rb")
+    with open(filename, "rb") as f:
+        header = tx_head()
+        f.readinto(header)
 
-    header = tx_head()
-    f.readinto(header)
+        print(f"Converting '{filename}'")
+        print(f"Image format: {header.format.value}")
+        print("Image width: %d" % header.width)
+        print("Image height: %d" % header.height)
 
-    print("Converting '%s'" % filename)
-    print("Image format: %s" % header.format.value)
-    print("Image width: %d" % header.width)
-    print("Image height: %d" % header.height)
+        mip_size = header.mip_size
 
-    mip_size = header.mip_size
-
-    header.mip_size = mip_size >> 2
-    header.height = header.height >> 2
-    for output_name in ["sky_fr.tga", "sky_lf.tga", "sky_bk.tga", "sky_rt.tga"]:
-        output_file_name = path.join(path.dirname(filename), output_name) + ".tx"
-        output_file = open(output_file_name, "wb")
-        print("Saving '%s'" % output_file_name)
-        output_file.write(header)
-        output_file.write(f.read(mip_size >> 2))
-        output_file.close()
-
-    f.close()
+        header.mip_size = mip_size >> 2
+        header.height = header.height >> 2
+        for output_name in ["sky_fr.tga", "sky_lf.tga", "sky_bk.tga", "sky_rt.tga"]:
+            output_file_name = f"{path.join(path.dirname(filename), output_name)}.tx"
+            with open(output_file_name, "wb") as output_file:
+                print(f"Saving '{output_file_name}'")
+                output_file.write(header)
+                output_file.write(f.read(mip_size >> 2))
 
 if (__name__ == "__main__"):
     # define args

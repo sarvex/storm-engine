@@ -264,12 +264,10 @@ def getmat(bone, active, context, ignoreparent):
     else:
         parentposemat = parentbonemat = mathutils.Matrix()
     if parentbonemat == parentposemat or ignoreparent:
-        newmat = bonemat_local.inverted() @ otherloc
-    else:
-        bonemat = parentbonemat.inverted() @ bonemat_local
+        return bonemat_local.inverted() @ otherloc
+    bonemat = parentbonemat.inverted() @ bonemat_local
 
-        newmat = bonemat.inverted() @ parentposemat.inverted() @ otherloc
-    return newmat
+    return bonemat.inverted() @ parentposemat.inverted() @ otherloc
 
 
 def read_vector(file):
